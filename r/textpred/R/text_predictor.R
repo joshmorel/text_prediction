@@ -83,27 +83,61 @@ TextPredictor <- function(model, maxorder, ngram_delim = "_", bos_tag="BOS") {
         self
 }
 
-print.TextPredictor <- function(self, ...) {
-        cat(paste0("TextPredictor with maximum order of ",self$maxorder))
+print.TextPredictor <- function(object, ...) {
+        cat(paste0("TextPredictor with maximum order of ",object$maxorder))
 }
 
-predict.TextPredictor <- function(self, tokens, n=self$maxorder) {
+predict.TextPredictor <- function(object, tokens, n=object$maxorder) {
         # history: vector of tokens used to predict nth token in n-gram language model
         # need to be adjusted to n-1 tokens
         stopifnot(class(tokens)=="character")
         if (n == 1) {
                 # delim-only represents any possible history
-                ngram_history <- self$ngram_delim
+                ngram_history <- object$ngram_delim
         } else {
-                ngram_history <- ngram_from_tokens(tokens, n=n, bos_tag=self$bos_tag, ngram_delim=self$ngram_delim)
+                ngram_history <- ngram_from_tokens(tokens, n=n, bos_tag=object$bos_tag, ngram_delim=object$ngram_delim)
         }
-        result <- self$model[[ngram_history]]
+        result <- object$model[[ngram_history]]
         # Recursively look-up shorter word history if nothing is found
         if (is.null(result)) {
-                return(predict(self, tokens, n = n-1))
+                return(predict(object, tokens, n = n-1))
         } else {
                 return(result)
         }
+
+}
+
+predict.TextPredictor <- function(object, tokens, n=object$maxorder) {
+        # history: vector of tokens used to predict nth token in n-gram language model
+        # need to be adjusted to n-1 tokens
+        stopifnot(class(tokens)=="character")
+        if (n == 1) {
+                # delim-only represents any possible history
+                ngram_history <- object$ngram_delim
+        } else {
+                ngram_history <- ngram_from_tokens(tokens, n=n, bos_tag=object$bos_tag, ngram_delim=object$ngram_delim)
+        }
+        result <- object$model[[ngram_history]]
+        # Recursively look-up shorter word history if nothing is found
+        if (is.null(result)) {
+                return(predict(object, tokens, n = n-1))
+        } else {
+                return(result)
+        }
+
+}
+
+
+summary.TextPredictor <- function(object) {
+        temp <- rep(object$ngram_delim,3)
+        return(temp)
+
+}
+
+mean.TextPredictor <- function(object) {
+        ngram_delim <- object$ngram_delim
+        temp <- rep(ngram_delim,3)
+        return(temp)
 
 }
 
