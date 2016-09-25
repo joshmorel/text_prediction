@@ -20,20 +20,6 @@ tokenize_from_input <- function(string) {
         return(tokens)
 }
 
-ngram_from_tokens <- function(tokens, n, bos_tag, ngram_delim) {
-        num_tokens <- length(tokens)
-        if (num_tokens + 1 >= n) {
-                # use history to predict n-th token
-                ngram_history <- paste0(tokens[(num_tokens-n+2):num_tokens],collapse=ngram_delim)
-        } else {
-                # pad history with beginning of sentence tag
-                pad_length <- n - num_tokens - 1
-                full_tokens <- c(rep(self$bos_tag, pad_length), tokens)
-                ngram_history <- paste0(full_tokens, collapse=ngram_delim)
-        }
-        return(ngram_history)
-}
-
 model_from_json <- function(path) {
         rawtext <- readChar(path, file.info(path)$size)
         model_json <- jsonlite::fromJSON(rawtext)
@@ -87,23 +73,22 @@ print.TextPredictor <- function(object, ...) {
         cat(paste0("TextPredictor with maximum order of ",object$maxorder))
 }
 
-predict.TextPredictor <- function(object, tokens, n=object$maxorder) {
-        # history: vector of tokens used to predict nth token in n-gram language model
-        # need to be adjusted to n-1 tokens
-        stopifnot(class(tokens)=="character")
-        if (n == 1) {
-                # delim-only represents any possible history
-                ngram_history <- object$ngram_delim
+ngrams <- function(object, tokens, n) {
+        UseMethod('ngrams', object)
+}
+
+ngrams.TextPredictor <- function(object, tokens, n) {
+        num_tokens <- length(tokens)
+        if (num_tokens + 1 >= n) {
+                # use history to predict n-th token
+                ngram_history <- paste0(tokens[(num_tokens-n+2):num_tokens],collapse=object$ngram_delim)
         } else {
-                ngram_history <- ngram_from_tokens(tokens, n=n, bos_tag=object$bos_tag, ngram_delim=object$ngram_delim)
+                # pad history with beginning of sentence tag
+                pad_length <- n - num_tokens - 1
+                full_tokens <- c(rep(object$bos_tag, pad_length), tokens)
+                ngram_history <- paste0(full_tokens, collapse=object$ngram_delim)
         }
-        result <- object$model[[ngram_history]]
-        # Recursively look-up shorter word history if nothing is found
-        if (is.null(result)) {
-                return(predict(object, tokens, n = n-1))
-        } else {
-                return(result)
-        }
+        return(ngram_history)
 
 }
 
@@ -115,7 +100,7 @@ predict.TextPredictor <- function(object, tokens, n=object$maxorder) {
                 # delim-only represents any possible history
                 ngram_history <- object$ngram_delim
         } else {
-                ngram_history <- ngram_from_tokens(tokens, n=n, bos_tag=object$bos_tag, ngram_delim=object$ngram_delim)
+                ngram_history <- ngrams(object, tokens, n)
         }
         result <- object$model[[ngram_history]]
         # Recursively look-up shorter word history if nothing is found
@@ -126,18 +111,3 @@ predict.TextPredictor <- function(object, tokens, n=object$maxorder) {
         }
 
 }
-
-
-summary.TextPredictor <- function(object) {
-        temp <- rep(object$ngram_delim,3)
-        return(temp)
-
-}
-
-mean.TextPredictor <- function(object) {
-        ngram_delim <- object$ngram_delim
-        temp <- rep(ngram_delim,3)
-        return(temp)
-
-}
-
