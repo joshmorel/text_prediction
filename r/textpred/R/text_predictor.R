@@ -1,5 +1,7 @@
 # for use in ngram
 library(stringi)
+library(jsonlite)
+library(hash)
 # constants, to use in tokenize_for_predict
 # note: 's could be is or possessive, so simply striping for vocab reduction
 kContractionsTo = c("won't",        "can't",  "n't",  "'ll",   "'re",  "'d",     "'ve",   "'m",  "'s")
@@ -32,24 +34,49 @@ ngram_from_tokens <- function(tokens, n, bos_tag, ngram_delim) {
         return(ngram_history)
 }
 
+model_from_json <- function(path) {
+        rawtext <- readChar(path, file.info(path)$size)
+        model_json <- fromJSON(rawtext)
+        model <- hash()
+        # expecting nested object with:
+        # word history as level 1 object keys
+        # word as level 2 object keys and score as value
+        for (i in seq_along(model_json)) {
+                words <- unlist(model_json[[i]])
+                words <- words[order(words, decreasing = T)]
+                model[[names(model_json)[i]]] <- words
+
+        }
+        return (model)
+}
+
 # class functions
 TextPredictor <- function(model, maxorder, ngram_delim = "_", bos_tag="BOS") {
         self <- list(maxorder = maxorder,
                      ngram_delim = ngram_delim,
                      bos_tag=bos_tag)
 
-        if (class(model) == "environment" ) {
+        if (class(model) == "hash" ) {
                 self[["model"]] = model
         } else if (class(model) == "character") {
-                self[["model"]] = readRDS(model)
-        } else {
-                stop("model must be r environment (namespace of lookups) or path to RDS of such")
+                if (!file.exists(model)) {
+                        stop("Looking for file, does not exist...")
+                } else if (grepl("\\.rds", model , ignore.case = T)) {
+                        print("Loading model from RDS...")
+                        self[["model"]] = readRDS(model)
+                } else {
+                        print("Loading model from text, JSON expected...")
+                        self[["model"]] = model_from_json(model)
+                }
+        }
+        else {
+                stop("Model must be hash or path to file containing model in RDS or Json")
         }
 
         # ensure there is at least non-null value for no-history if not in model
         # to prevent infinite loop in recursive look-up
-        if (is.null(self[["model"]][[ngram_delim]])) {
-                self[["model"]][[ngram_delim]] = ""
+        if (is.null(self$model[[self$ngram_delim]])) {
+                self$model[[self$ngram_delim]] = ""
         }
 
         class(self) <- "TextPredictor"
