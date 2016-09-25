@@ -10,13 +10,13 @@ kContractionsFrom =   c("will not", "cannot", " not", " will", " are", " would",
 # helper functions
 tokenize_from_input <- function(string) {
         # Extract last sentence
-        sentence <- stri_extract_last_boundaries(string, type="sentence")
+        sentence <- stringi::stri_extract_last_boundaries(string, type="sentence")
         # Expand contractions
-        sentence <- stri_replace_all_fixed(sentence, pattern=kContractionsTo, replacement=kContractionsFrom, vectorize_all = FALSE)
+        sentence <- stringi::stri_replace_all_fixed(sentence, pattern=kContractionsTo, replacement=kContractionsFrom, vectorize_all = FALSE)
         # Case fold
-        sentence <- stri_trans_tolower(sentence)
+        sentence <- stringi::stri_trans_tolower(sentence)
         # Tokenize on all non-alpha characters
-        tokens <- unlist(stri_extract_all_charclass(sentence, "[a-z]", merge=T))
+        tokens <- unlist(stringi::stri_extract_all_charclass(sentence, "[a-z]", merge=T))
         return(tokens)
 }
 
@@ -36,8 +36,8 @@ ngram_from_tokens <- function(tokens, n, bos_tag, ngram_delim) {
 
 model_from_json <- function(path) {
         rawtext <- readChar(path, file.info(path)$size)
-        model_json <- fromJSON(rawtext)
-        model <- hash()
+        model_json <- jsonlite::fromJSON(rawtext)
+        model <- hash::hash()
         # expecting nested object with:
         # word history as level 1 object keys
         # word as level 2 object keys and score as value
