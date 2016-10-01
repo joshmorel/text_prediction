@@ -9,6 +9,6 @@ Description: Train and use next-word text prediction models
 Depends: R (>= 3.1.0)
 Imports:
     stringi,
-    hash
+    jsonlite
 License: GPL (>= 2)
 Suggests: testthat
