@@ -91,6 +91,27 @@ ngrams.TextPredictor <- function(object, tokens, n) {
 
 }
 
+merge_predictions <- function(object, existing_predictions, additional_predictions) {
+        UseMethod('merge_predictions', object)
+}
+
+merge_predictions.TextPredictor <- function(object, existing_predictions, additional_predictions) {
+        updated_predictions <- existing_predictions
+        existing_words <- names(existing_predictions)
+        for (i in seq_along(additional_predictions)) {
+                word <- names(additional_predictions)[i]
+                if (word %in% existing_words) {
+                        # only add existing if score is higher
+                        if (additional_predictions[[word]] >= existing_predictions[[word]]) {
+                                updated_predictions[[word]] <- additional_predictions[[word]]
+                        }
+                } else {
+                        updated_predictions <- append(updated_predictions, additional_predictions[i])
+                }
+        }
+        return(updated_predictions)
+}
+
 predict.TextPredictor <- function(object, tokens, n=object$maxorder, existing_predictions=numeric()) {
         # history: vector of tokens used to predict nth token in n-gram language model
         # need to be adjusted to n-1 tokens
@@ -101,15 +122,14 @@ predict.TextPredictor <- function(object, tokens, n=object$maxorder, existing_pr
         } else {
                 ngram_history <- ngrams(object, tokens, n)
         }
-        order_predictions <- object$model[[ngram_history]]
-        order_predictions <- c(order_predictions, existing_predictions)
+        current_predictions <- object$model[[ngram_history]]
+        current_predictions <- merge_predictions(object, existing_predictions, current_predictions)
         # Recursively look-up shorter word history adding lower-order words to overall prediction
         # assume back-off penalty already applied to score in model building
         if (n > 1) {
-                return(predict(object, tokens, n-1, order_predictions))
+                return(predict(object, tokens, n-1, current_predictions))
         } else {
-                return(order_predictions[order(order_predictions, decreasing = T)])
+                return(current_predictions[order(current_predictions, decreasing = T)])
         }
 
 }
-

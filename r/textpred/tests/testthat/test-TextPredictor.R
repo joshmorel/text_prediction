@@ -13,13 +13,14 @@ test_that("Look-up with only low-level", {
 test_that("Look-up with top-level", {
         model <- new.env(hash = TRUE , parent=emptyenv())
         model$"_" <- setNames(c(0.04,0.02,0.01),c("next","word","is"))
-        model$"text" <- setNames(c(0.16,0.1,0.09),c("we","are","cool"))
+        # don't want to predict if higher level found
+        model$"text" <- setNames(c(0.16,0.1,0.09),c("i","are","cool"))
         model$"random_text" <- setNames(c(0.23,0.20,0.11),c("i","am","okay"))
         model$"some_random_text" <- setNames(c(0.4,0.3,0.21), c("the","right","word"))
         mypred <- TextPredictor(model, maxorder = 4)
         actual <- predict(mypred,c("some", "random", "text"))
-        expect_identical(actual, setNames(c(0.4,0.3,0.23,0.21,0.20,0.16,0.11,0.1,0.09,0.04,0.02,0.01),
-                                          c("the","right","i","word","am","we","okay","are","cool","next","word","is")))
+        expect_identical(actual, setNames(c(0.4,0.3,0.23,0.21,0.20,0.11,0.1,0.09,0.04,0.01),
+                                          c("the","right","i","word","am","okay","are","cool","next","is")))
 
 })
 
