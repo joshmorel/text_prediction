@@ -1,7 +1,6 @@
 # for use in ngram
 library(stringi)
 library(jsonlite)
-library(hash)
 # constants, to use in tokenize_for_predict
 # note: 's could be is or possessive, so simply striping for vocab reduction
 kContractionsTo = c("won't",        "can't",  "n't",  "'ll",   "'re",  "'d",     "'ve",   "'m",  "'s")
@@ -23,7 +22,7 @@ tokenize_from_input <- function(string) {
 model_from_json <- function(path) {
         rawtext <- readChar(path, file.info(path)$size)
         model_json <- jsonlite::fromJSON(rawtext)
-        model <- hash::hash()
+        model <- new.env(hash = TRUE , parent=emptyenv())
         # expecting nested object with:
         # word history as level 1 object keys
         # word as level 2 object keys and score as value
@@ -42,7 +41,7 @@ TextPredictor <- function(model, maxorder, ngram_delim = "_", bos_tag="BOS", eos
                      ngram_delim = ngram_delim,
                      bos_tag=bos_tag)
 
-        if (class(model) == "hash" ) {
+        if (class(model) == "environment" ) {
                 self[["model"]] = model
         } else if (class(model) == "character") {
                 if (!file.exists(model)) {
@@ -56,7 +55,7 @@ TextPredictor <- function(model, maxorder, ngram_delim = "_", bos_tag="BOS", eos
                 }
         }
         else {
-                stop("Model must be hash or path to file containing model in RDS or Json")
+                stop("Model must be environment or path to file containing model in RDS or Json")
         }
 
         # ensure there is at least non-null value for no-history if not in model

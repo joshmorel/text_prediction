@@ -1,7 +1,7 @@
 context("Testing basic prediction")
 
 test_that("Look-up with only low-level", {
-        model <- hash()
+        model <- new.env(hash = TRUE , parent=emptyenv())
         model$"_" <- setNames(c(0.04,0.02,0.01),c("next","word","is"))
         mypred <- TextPredictor(model, maxorder = 4)
         actual <- predict(mypred,c("some", "random", "text"))
@@ -11,7 +11,7 @@ test_that("Look-up with only low-level", {
 
 
 test_that("Look-up with top-level", {
-        model <- hash()
+        model <- new.env(hash = TRUE , parent=emptyenv())
         model$"_" <- setNames(c(0.04,0.02,0.01),c("next","word","is"))
         model$"text" <- setNames(c(0.16,0.1,0.09),c("we","are","cool"))
         model$"random_text" <- setNames(c(0.23,0.20,0.11),c("i","am","okay"))
@@ -25,7 +25,7 @@ test_that("Look-up with top-level", {
 
 
 test_that("Putting it all together look-up with long sentence and tokenize", {
-        model <- hash()
+        model <- new.env(hash = TRUE , parent=emptyenv())
         model$"_" <- setNames(c(0.04,0.02,0.01),c("next","word","is"))
         model$"the" <- setNames(c(0.4,0.2,0.1),c("world","winter","game"))
         mypred <- TextPredictor(model, maxorder = 2)
