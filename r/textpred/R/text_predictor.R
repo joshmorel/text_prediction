@@ -37,7 +37,7 @@ model_from_json <- function(path) {
 }
 
 # class functions
-TextPredictor <- function(model, maxorder, ngram_delim = "_", bos_tag="BOS") {
+TextPredictor <- function(model, maxorder, ngram_delim = "_", bos_tag="BOS", eos_tag="EOS") {
         self <- list(maxorder = maxorder,
                      ngram_delim = ngram_delim,
                      bos_tag=bos_tag)
@@ -92,7 +92,7 @@ ngrams.TextPredictor <- function(object, tokens, n) {
 
 }
 
-predict.TextPredictor <- function(object, tokens, n=object$maxorder) {
+predict.TextPredictor <- function(object, tokens, n=object$maxorder, existing_predictions=numeric()) {
         # history: vector of tokens used to predict nth token in n-gram language model
         # need to be adjusted to n-1 tokens
         stopifnot(class(tokens)=="character")
@@ -102,12 +102,15 @@ predict.TextPredictor <- function(object, tokens, n=object$maxorder) {
         } else {
                 ngram_history <- ngrams(object, tokens, n)
         }
-        result <- object$model[[ngram_history]]
-        # Recursively look-up shorter word history if nothing is found
-        if (is.null(result)) {
-                return(predict(object, tokens, n = n-1))
+        order_predictions <- object$model[[ngram_history]]
+        order_predictions <- c(order_predictions, existing_predictions)
+        # Recursively look-up shorter word history adding lower-order words to overall prediction
+        # assume back-off penalty already applied to score in model building
+        if (n > 1) {
+                return(predict(object, tokens, n-1, order_predictions))
         } else {
-                return(result)
+                return(order_predictions[order(order_predictions, decreasing = T)])
         }
 
 }
+
