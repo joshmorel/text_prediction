@@ -4,7 +4,7 @@ import shutil
 from contextlib import redirect_stdout
 import pytest
 from partition import partition
-from stupid_backoff_mr import task1_vocab, task2_ngramfreq
+from stupid_backoff import task1_vocab, task2_ngramfreq
 from subprocess import call
 
 @pytest.fixture(scope='function')
