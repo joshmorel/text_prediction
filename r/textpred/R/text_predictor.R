@@ -5,9 +5,14 @@ library(data.table)
 # note: 's could be is or possessive, so simply striping for vocab reduction
 kContractionsTo = c("won't",        "can't",  "n't",  "'ll",   "'re",  "'d",     "'ve",   "'m",  "'s")
 kContractionsFrom =   c("will not", "cannot", " not", " will", " are", " would", " have", " am", "")
+kLikelySentenceEnd = c(". ","! ", "? ")
 
 # helper functions
 tokenize_from_input <- function(string) {
+        # if likely sentence ender then want to provide predictions as if new sentence
+        if (grepl("[.!?]\\s{1,}$",string)) {
+                return(character(0))
+        }
         # Extract last sentence
         sentence <- stringi::stri_extract_last_boundaries(string, type="sentence")
         # Expand contractions

@@ -21,6 +21,17 @@ test_that("Look-up with empty input", {
 })
 
 
+test_that("Look-up should predict as if new sentence", {
+        #what to make sure empty input gets BOS token
+        model <- "inputs/model_empty.txt"
+        mypred <- TextPredictor(model, maxorder = 2)
+        actual <- predict(mypred,tokenize_from_input("hello there. "))
+        expected <- data.table(word = c("i","the","are","next","word","is"),
+                               score = c(0.6,0.5,0.45,0.4,0.2,0.1))
+        expect_identical(actual, expected)
+})
+
+
 test_that("Look-up with top-level", {
         model <- "inputs/model_larger.txt"
         mypred <- TextPredictor(model, maxorder=4, ngram_delim="_")
