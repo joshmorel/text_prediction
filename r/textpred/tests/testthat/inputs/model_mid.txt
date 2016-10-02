@@ -1,0 +1,7 @@
+history	word	score
+ 	word	0.02
+ 	next	0.04
+ 	is	0.01
+the	world	0.4
+the	winter	0.2
+the	game	0.1

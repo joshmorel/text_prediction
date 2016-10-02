@@ -8,8 +8,7 @@ TASK4=task4_convertRDS.R
 TOKENIZED="$(readlink -f ..)/data/examples/tokenized"
 VOCAB="$(readlink -f ..)/data/examples/_1_vocab"
 NGRAM="$(readlink -f ..)/data/examples/_2_ngram"
-MODEL="$(readlink -f ..)/data/examples/_3_model"
-RDS="$(readlink -f ..)/data/examples/_4_model.RDS"
+MODEL="$(readlink -f ..)/data/examples/_3_model.txt"
 
 N=3
 
@@ -19,4 +18,3 @@ python3 ${TASK1} ${INFILE} > ${VOCAB}
 export LC_ALL=C
 python3 ${TASK2} ${TOKENIZED} ${VOCAB} -n ${N} | sort > ${NGRAM}
 python3 ${TASK3} ${NGRAM} -n ${N} > ${MODEL}
-Rscript ${TASK4} -j ${MODEL} -r ${RDS}

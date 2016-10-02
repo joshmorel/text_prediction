@@ -1,0 +1,13 @@
+history	word	score
+_	word	0.02
+_	next	0.04
+_	is	0.01
+text	i	0.16
+text	are	0.1
+text	cool	0.09
+random_text	i	0.23
+random_text	am	0.2
+random_text	okay	0.11
+some_random_text	the	0.4
+some_random_text	right	0.3
+some_random_text	word	0.21

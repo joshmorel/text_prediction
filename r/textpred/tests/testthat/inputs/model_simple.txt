@@ -1,0 +1,6 @@
+history	word	score
+ 	word	0.2
+ 	next	0.4
+ 	is	0.1
+something	the	0.2
+something	over	0.1
