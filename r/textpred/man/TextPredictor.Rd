@@ -6,16 +6,21 @@
 This builds a Text Predictor object from a tab-delimited text file containing the model.
 It can be used to predict the next word from a parsed history.}
 \usage{
-TextPredictor(model, maxorder, ngram_delim = " ", bos_tag = "BOS")
+TextPredictor(model, vocab = NULL, maxorder = 2, ngram_delim = " ",
+  bos_tag = "BOS", unk_tag = "UNK")
 }
 \arguments{
-\item{model}{A tab-delimited text file consisting of word history, word, score columns}
+\item{model}{Path to a tab-delimited text file consisting of word history, word, score columns}
+
+\item{vocab}{Optional path to one-word per line vocabulary}
 
 \item{maxorder}{The maximum order of the model, e.g. 3 = trigram}
 
 \item{ngram_delim}{The delimiter of the word history ngrams in the file}
 
 \item{bos_tag}{The tag indicating the beginning of sentence token}
+
+\item{unk_tag}{The tag indicating an unknown for use when word not found in vocab (if used)}
 }
 \value{
 A Text Predictor object

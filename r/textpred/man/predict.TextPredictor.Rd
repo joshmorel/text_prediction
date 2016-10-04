@@ -5,12 +5,12 @@
 \title{Predict Next Word
 Using the Text Predictor and tokens as input, predict a table of the next word}
 \usage{
-\method{predict}{TextPredictor}(object, tokens)
+\method{predict}{TextPredictor}(object, string)
 }
 \arguments{
 \item{object}{The TextPredictor object}
 
-\item{tokens}{A character vector of tokens representing word history}
+\item{string}{An English language string of words}
 }
 \value{
 A data.table of next best words in order
@@ -20,6 +20,6 @@ Predict Next Word
 Using the Text Predictor and tokens as input, predict a table of the next word
 }
 \examples{
-predict(mytextpred, c("hello","my","darling"))
+predict(mytextpred, "hello my darling"))
 }
 
