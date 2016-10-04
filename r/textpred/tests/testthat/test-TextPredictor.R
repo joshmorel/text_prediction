@@ -50,3 +50,12 @@ test_that("Putting it all together look-up with long sentence and tokenize", {
         expected <- data.table(word = c("world","winter","game","next","word","is"),
                                score = c(0.4,0.2,0.1, 0.04,0.02,0.01))
 })
+
+test_that("Handling unknown words and vocab", {
+        model <- "inputs/model_unknowns.txt"
+        vocab <- "inputs/vocab.txt"
+        mypred <- TextPredictor(model, vocab=vocab, maxorder = 2)
+        actual <- predict(mypred,tokenize_from_input("unknown"))
+        expected <- data.table(word = c("some","dude","hates","next","word","is"),
+                               score = c(0.3,0.2,0.1, 0.03,0.02,0.01))
+})

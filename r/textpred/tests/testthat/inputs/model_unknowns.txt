@@ -1,0 +1,10 @@
+history	word	score
+ 	word	0.02
+ 	next	0.03
+ 	is	0.01
+something	we	0.2
+something	are	0.1
+something	the 0.1
+UNK some    0.3
+UNK dude    0.2
+UNK hates   0.1

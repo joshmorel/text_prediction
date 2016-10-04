@@ -102,3 +102,5 @@ working/
 .Rhistory
 .directory
 *~*
+r/shiny/rsconnect/
+r/shiny/*.txt

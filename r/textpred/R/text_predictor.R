@@ -5,9 +5,15 @@ library(data.table)
 # note: 's could be is or possessive, so simply striping for vocab reduction
 kContractionsTo = c("won't",        "can't",  "n't",  "'ll",   "'re",  "'d",     "'ve",   "'m",  "'s")
 kContractionsFrom =   c("will not", "cannot", " not", " will", " are", " would", " have", " am", "")
-kLikelySentenceEnd = c(". ","! ", "? ")
 
-# helper functions
+#' Tokenize from English Text Input
+#' Returns tokens from an English text input for last sentence only. Not flexible - to be used for next word prediction
+#' only.
+#'
+#' @param string Some English text
+#' @export
+#' @examples
+#' tokenize_from_input("hello my darling")
 tokenize_from_input <- function(string) {
         # if likely sentence ender then want to provide predictions as if new sentence
         if (grepl("[.!?]\\s{1,}$",string)) {
@@ -24,7 +30,16 @@ tokenize_from_input <- function(string) {
         return(tokens)
 }
 
-# class functions
+#' Build a Text Predictor
+#' This builds a Text Predictor object from a tab-delimited text file containing the model.
+#' It can be used to predict the next word from a parsed history.
+#'
+#' @param model A tab-delimited text file consisting of word history, word, score columns
+#' @param maxorder The maximum order of the model, e.g. 3 = trigram
+#' @param ngram_delim The delimiter of the word history ngrams in the file
+#' @param bos_tag The tag indicating the beginning of sentence token
+#' @return A Text Predictor object
+#' @export
 TextPredictor <- function(model, maxorder, ngram_delim = " ", bos_tag="BOS") {
         self <- list(maxorder = maxorder,
                      ngram_delim = ngram_delim,
@@ -42,7 +57,7 @@ print.TextPredictor <- function(object, ...) {
         cat(paste0("TextPredictor with maximum order of ",object$maxorder))
 }
 
-ngrams <- function(object, tokens, n) {
+ngrams <- function(object, tokens) {
         UseMethod('ngrams', object)
 }
 
@@ -76,6 +91,16 @@ ngrams.TextPredictor <- function(object, tokens) {
         return(ngram_histories)
 
 }
+
+#' Predict Next Word
+#' Using the Text Predictor and tokens as input, predict a table of the next word
+#'
+#' @param object The TextPredictor object
+#' @param tokens A character vector of tokens representing word history
+#' @return A data.table of next best words in order
+#' @export
+#' @examples
+#' predict(mytextpred, c("hello","my","darling"))
 
 predict.TextPredictor <- function(object, tokens) {
         # history: vector of tokens used to predict nth token in n-gram language model
