@@ -13,13 +13,12 @@ updateText <- function(currentText, extraText) {
 
 }
 
-model <- TextPredictor('model.txt', maxorder = 4, ngram_delim = " ")
+model <- TextPredictor(model='model.txt', vocab='vocab.txt', maxorder=4, ngram_delim=" ")
 
 shinyServer(function(input, output, session) {
 
         prediction  <- reactive({
-                tokens <- tokenize_from_input(input$activeText)
-                predict(model,tokens)
+                predict(model, input$activeText)
         })
 
         output$predict1_word <- renderUI({
