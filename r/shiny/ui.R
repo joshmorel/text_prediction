@@ -21,6 +21,12 @@ shinyUI(fluidPage(
                                            ")
                             )
                      )),
+                   fluidRow(
+                           # once the model has loaded this will hide
+                           column(12,
+                                  conditionalPanel(condition = "output.predict1_score == null",p("Prediction data loading..."))
+                                  )
+                           ),
                    hr(),
                    fluidRow("Predicted Words"),
                    fluidRow(
@@ -33,10 +39,10 @@ shinyUI(fluidPage(
                    hr(),
                    fluidRow("Stupid Backoff Scores"),
                    fluidRow(
-                           column(3,uiOutput("predict1_score")),
-                           column(3,uiOutput("predict2_score")),
-                           column(3,uiOutput("predict3_score")),
-                           column(3,uiOutput("predict4_score"))
+                           column(3,textOutput("predict1_score")),
+                           column(3,textOutput("predict2_score")),
+                           column(3,textOutput("predict3_score")),
+                           column(3,textOutput("predict4_score"))
                            )
 
             )

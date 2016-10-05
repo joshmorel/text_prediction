@@ -29,5 +29,5 @@ For more information on the Python scripts and textpred package, please visit ht
 * R testing with: [testthat](https://cran.r-project.org/web/packages/testthat/index.html).
 * Python IDE: [PyCharm](https://www.jetbrains.com/pycharm)
 * R IDE: [RStudio](https://www.rstudio.com/)
-* All the great contributors to Python, R, Linux, git
+* All the great contributors to Python, R, Linux, git and foundational projects
 * Numerous NLP researchers and developers

@@ -13,9 +13,12 @@ updateText <- function(currentText, extraText) {
 
 }
 
-model <- TextPredictor(model='model.txt', vocab='vocab.txt', maxorder=4, ngram_delim=" ")
 
 shinyServer(function(input, output, session) {
+
+
+
+        model <- TextPredictor(model='model.txt', vocab='vocab.txt', maxorder=4, ngram_delim=" ")
 
         prediction  <- reactive({
                 predict(model, input$activeText)
@@ -25,7 +28,7 @@ shinyServer(function(input, output, session) {
           actionButton("predict1", label = prediction()[1,word])
         })
 
-        output$predict1_score <- renderPrint({
+        output$predict1_score <- renderText({
           print(prediction()[1,score])
         })
 
@@ -33,7 +36,7 @@ shinyServer(function(input, output, session) {
           actionButton("predict2", label = prediction()[2,word])
         })
 
-        output$predict2_score <- renderPrint({
+        output$predict2_score <- renderText({
           print(prediction()[2,score])
         })
 
@@ -41,7 +44,7 @@ shinyServer(function(input, output, session) {
           actionButton("predict3", label = prediction()[3,word])
         })
 
-        output$predict3_score <- renderPrint({
+        output$predict3_score <- renderText({
           print(prediction()[3,score])
         })
 
@@ -49,7 +52,7 @@ shinyServer(function(input, output, session) {
                 actionButton("predict4", label = prediction()[4,word])
         })
 
-        output$predict4_score <- renderPrint({
+        output$predict4_score <- renderText({
                 print(prediction()[4,score])
         })
 
